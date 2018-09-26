@@ -25,6 +25,14 @@ func NewFieldElement(num *big.Int, prime *big.Int) (*FieldElement, error) {
 	return &FieldElement{num: num, prime: prime}, nil
 }
 
+func (fe *FieldElement) Value() int64 {
+	return fe.num.Int64()
+}
+
+func (fe *FieldElement) Order() int64 {
+	return fe.prime.Int64()
+}
+
 // Equals tests for equality between two FieldElements
 func (fe *FieldElement) Equals(fe2 *FieldElement) bool {
 	if fe.num.Cmp(fe2.num) == 0 && fe.prime.Cmp(fe2.prime) == 0 {
