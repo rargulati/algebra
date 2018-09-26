@@ -67,5 +67,49 @@ func (fe *FieldElement) Add(fe2 *FieldElement) (*FieldElement, error) {
 	}
 
 	sum := big.NewInt(0).Add(fe.num, fe2.num)
-	return &FieldElement{num: sum, prime: fe.prime}, nil
+	mod := big.NewInt(0).Mod(sum, fe.prime)
+
+	return &FieldElement{num: mod, prime: fe.prime}, nil
+}
+
+// Sub holds true if and only if for FieldElements A and B, A and B are elements
+// of Fprime, and then A.Sub(B) is an element of Fprime. Field subtraction must
+// be commutative and associative, with the values being closed under the order.
+func (fe *FieldElement) Sub(fe2 *FieldElement) (*FieldElement, error) {
+	if fe.prime.Cmp(fe2.prime) != 0 {
+		return nil, fmt.Errorf(
+			"can't subtract two numbers of different Fields; expected order %d",
+			fe.prime.Int64())
+	}
+
+	sub := big.NewInt(0).Sub(fe.num, fe2.num)
+	mod := big.NewInt(0).Mod(sub, fe.prime)
+
+	return &FieldElement{num: mod, prime: fe.prime}, nil
+}
+
+// Mult holds true if and only if for FieldElements A and B, A and B are elements
+// of Fprime, and then A.Mult(B) is an element of Fprime. Field multiplication must
+// be commutative and associative, with the values being closed under the order.
+// Mult between A and B is akin to executing field addition of A, B times.
+func (fe *FieldElement) Mult(fe2 *FieldElement) (*FieldElement, error) {
+	if fe.prime.Cmp(fe2.prime) != 0 {
+		return nil, fmt.Errorf(
+			"can't multiply two numbers of different Fields; expected order %d",
+			fe.prime.Int64())
+	}
+
+	mult := big.NewInt(0).Mul(fe.num, fe2.num)
+	mod := big.NewInt(0).Mod(mult, fe.prime)
+
+	return &FieldElement{num: mod, prime: fe.prime}, nil
+}
+
+// Exp of a FieldElement A takes an int B, which is the exponent, and executes
+// field multiplication of A, B times. This value is then modulus the order of A,
+// Fprime, as the product of A^B is bound to the order of A.
+func (fe *FieldElement) Exp(exponent *big.Int) (*FieldElement, error) {
+	// big int exponentiation takes the modulus into consideration
+	exp := big.NewInt(0).Exp(fe.num, exponent, fe.prime)
+	return &FieldElement{num: exp, prime: fe.prime}, nil
 }
