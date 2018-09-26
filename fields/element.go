@@ -56,15 +56,16 @@ func (fe *FieldElement) String() string {
 		fe.prime.Int64())
 }
 
-// FieldAddition holds true if and only if for FieldElements A and B, A and B are
-// elements of Fprime, and then A.Add(B) is an element of Fprime. Field Addition
-// must be commutative and associative.
+// Add holds true if and only if for FieldElements A and B, A and B are elements
+// of Fprime, and then A.Add(B) is an element of Fprime. Field addition must be
+// be commutative and associative, with the values being closed under the order.
 func (fe *FieldElement) Add(fe2 *FieldElement) (*FieldElement, error) {
 	if fe.prime.Cmp(fe2.prime) != 0 {
 		return nil, fmt.Errorf(
 			"can't add two numbers of different Fields; expected order %d",
 			fe.prime.Int64())
 	}
+
 	sum := big.NewInt(0).Add(fe.num, fe2.num)
 	return &FieldElement{num: sum, prime: fe.prime}, nil
 }
