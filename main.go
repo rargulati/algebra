@@ -50,4 +50,58 @@ func main() {
 		panic(err)
 	}
 	fmt.Printf("A(%d) multiplied with A(%d): %d\n", a.Value(), a.Value(), multAA.Value())
+
+	c, err := fields.NewFieldElement(big.NewInt(3), big.NewInt(31))
+	if err != nil {
+		panic(err)
+	}
+	d, err := fields.NewFieldElement(big.NewInt(24), big.NewInt(31))
+	if err != nil {
+		panic(err)
+	}
+
+	divCD, err := c.Div(d)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("C(%d) divided by D(%d): %d\n", c.Value(), d.Value(), divCD.Value())
+
+	c, err = fields.NewFieldElement(big.NewInt(17), big.NewInt(31))
+	if err != nil {
+		panic(err)
+	}
+	d, err = fields.NewFieldElement(big.NewInt(3), big.NewInt(31))
+	if err != nil {
+		panic(err)
+	}
+
+	divCD, err = c.Div(d)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("C(%d) divided by D(%d): %d\n", c.Value(), d.Value(), divCD.Value())
+
+	c, err = fields.NewFieldElement(big.NewInt(4), big.NewInt(31))
+	if err != nil {
+		panic(err)
+	}
+	d, err = fields.NewFieldElement(big.NewInt(4), big.NewInt(31))
+	if err != nil {
+		panic(err)
+	}
+
+	e, err := fields.NewFieldElement(big.NewInt(11), big.NewInt(31))
+	if err != nil {
+		panic(err)
+	}
+
+	divCD, err = c.Div(d)
+	if err != nil {
+		panic(err)
+	}
+	multCDE, err := divCD.Mult(e)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("C(%d) divided by D(%d), then multiplied by E(%d): %d\n", c.Value(), d.Value(), e.Value(), multCDE.Value())
 }

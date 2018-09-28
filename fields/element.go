@@ -109,7 +109,28 @@ func (fe *FieldElement) Mult(fe2 *FieldElement) (*FieldElement, error) {
 // field multiplication of A, B times. This value is then modulus the order of A,
 // Fprime, as the product of A^B is bound to the order of A.
 func (fe *FieldElement) Exp(exponent *big.Int) (*FieldElement, error) {
+	primeMinusOne := big.NewInt(0).Sub(fe.prime, big.NewInt(1))
+	// adjust for negative exponents by exploiting a^(p-1) = 1
+	fieldValue := big.NewInt(0).Mod(exponent, primeMinusOne)
 	// big int exponentiation takes the modulus into consideration
-	exp := big.NewInt(0).Exp(fe.num, exponent, fe.prime)
+	exp := big.NewInt(0).Exp(fe.num, fieldValue, fe.prime)
 	return &FieldElement{num: exp, prime: fe.prime}, nil
+}
+
+func (fe *FieldElement) Div(fe2 *FieldElement) (*FieldElement, error) {
+	if fe.prime.Cmp(fe2.prime) != 0 {
+		return nil, fmt.Errorf(
+			"can't divide two numbers of different Fields; expected order %d",
+			fe.prime.Int64())
+	}
+
+	// employ exponentiation via fermats little theorem
+	exponent := big.NewInt(0).Sub(fe.prime, big.NewInt(2))
+	exp := big.NewInt(0).Exp(fe2.num, exponent, big.NewInt(0))
+	// produce the product by multiplying against the denominator
+	product, err := fe.Mult(&FieldElement{num: exp, prime: fe.prime})
+	if err != nil {
+		return nil, err
+	}
+	return &FieldElement{num: product.num, prime: product.prime}, nil
 }
